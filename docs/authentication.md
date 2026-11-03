@@ -15,6 +15,14 @@ Saknas något av dem, eller är de ofullständiga, avvisas alla anrop och `/api/
 
 Med `AUTH_MODE=password` skyddas översikten i stället av `ADMIN_PASSWORD` (minst 8 tecken) och en HMAC-signerad sessionscookie som gäller i 30 dagar. Byte av lösenord loggar ut alla. Läget är till för Docker och andra egna installationer och sätts aldrig i produktion bakom Access.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:923bf0429737046bd66cecd9fc19c649d7cf8dd03034c0fa424a6fe8bf5837b7 -->
+
+I lösenordsläget kräver utloggning via `/auth/logout` eller `/cdn-cgi/access/logout` ett POST-anrop från samma ursprung.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## StudentConsulting-kontot
 
 `STUDENTCONSULTING_EMAIL` och `STUDENTCONSULTING_PASSWORD` sätts antingen som hemligheter på Workern eller sparas under **System**. Hemligheter på Workern går före. Lokalt kan de ligga i `.dev.vars`, som aldrig checkas in.

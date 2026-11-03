@@ -15,6 +15,14 @@ If either is missing or incomplete, every request is rejected and `/api/ready` r
 
 With `AUTH_MODE=password` the dashboard is instead protected by `ADMIN_PASSWORD` (at least 8 characters) and an HMAC-signed session cookie that lasts 30 days. Changing the password signs everyone out. The mode is meant for Docker and other self-hosted installs and is never set in production behind Access.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:44fcf8103e48469362e50944acc46dc12915cf51f0185ec8904b87cd8b1944e9 -->
+
+In password mode, logout through `/auth/logout` or `/cdn-cgi/access/logout` requires a same-origin POST request.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## The StudentConsulting account
 
 `STUDENTCONSULTING_EMAIL` and `STUDENTCONSULTING_PASSWORD` are either set as secrets on the Worker or saved under **System**. Secrets on the Worker win. Locally they can live in `.dev.vars`, which is never committed.

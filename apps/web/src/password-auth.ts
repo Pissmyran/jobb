@@ -3,6 +3,7 @@
 // "<expiry>.<mac>". Changing the password logs every session out.
 import { renderLoginPage } from "./auth-ui";
 import type { AccessIdentity } from "./access-auth";
+import { requireSameOriginMutation } from "./request-security";
 
 export interface PasswordAuthEnv {
   AUTH_MODE?: string;
@@ -101,6 +102,11 @@ export async function passwordAuthRoute(
     });
   }
   if (pathname === "/auth/logout" || pathname === "/cdn-cgi/access/logout") {
+    if (request.method !== "POST") {
+      return new Response(null, { status: 405, headers: { allow: "POST" } });
+    }
+    const mutationFailure = requireSameOriginMutation(request);
+    if (mutationFailure) return mutationFailure;
     return new Response(null, {
       status: 303,
       headers: {
