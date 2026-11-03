@@ -13,6 +13,10 @@ export interface SmtpEnv {
 
 type Reply = { code: number; text: string };
 
+const MAX_REPLY_LINE_BYTES = 512;
+const MAX_REPLY_BYTES = 64 * 1024;
+const REPLY_TIMEOUT_MS = 10 * 60 * 1000;
+
 function encodeHeader(value: string): string {
   return /^[\x20-\x7e]*$/.test(value)
     ? value
@@ -65,22 +69,51 @@ export function smtpBinding(env: SmtpEnv): EmailBinding {
       );
       let writer = socket.writable.getWriter();
       let reader = socket.readable.getReader();
-      let buffer = "";
+      let pending = new Uint8Array(0);
+      let offset = 0;
       const decoder = new TextDecoder();
       const read = async (): Promise<Reply> => {
-        for (;;) {
-          const lines = buffer.split("\r\n");
-          const done = lines.findIndex((line) => /^\d{3} /.test(line));
-          if (done >= 0) {
-            buffer = lines.slice(done + 1).join("\r\n");
-            return {
-              code: Number(lines[done].slice(0, 3)),
-              text: lines.slice(0, done + 1).join("\n"),
-            };
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const reply = async (): Promise<Reply> => {
+          const lines: string[] = [];
+          let line: number[] = [];
+          let bytes = 0;
+          for (;;) {
+            if (offset === pending.length) {
+              const chunk = await reader.read();
+              if (chunk.done) throw new Error("SMTP-servern stängde anslutningen.");
+              if (chunk.value.length > MAX_REPLY_BYTES)
+                throw new Error("SMTP-svaret är för stort.");
+              pending = chunk.value;
+              offset = 0;
+              if (!pending.length) continue;
+            }
+            const byte = pending[offset++];
+            line.push(byte);
+            if (++bytes > MAX_REPLY_BYTES || line.length > MAX_REPLY_LINE_BYTES) {
+              throw new Error("SMTP-svaret är för stort.");
+            }
+            if (byte !== 10 || line[line.length - 2] !== 13) continue;
+            const text = decoder.decode(new Uint8Array(line.slice(0, -2)));
+            lines.push(text);
+            if (/^\d{3} /.test(text)) {
+              return { code: Number(text.slice(0, 3)), text: lines.join("\n") };
+            }
+            line = [];
           }
-          const chunk = await reader.read();
-          if (chunk.done) throw new Error("SMTP-servern stängde anslutningen.");
-          buffer += decoder.decode(chunk.value, { stream: true });
+        };
+        try {
+          return await Promise.race([
+            reply(),
+            new Promise<never>((_, reject) => {
+              timer = setTimeout(
+                () => reject(new Error("SMTP-svaret tog för lång tid.")),
+                REPLY_TIMEOUT_MS,
+              );
+            }),
+          ]);
+        } finally {
+          clearTimeout(timer);
         }
       };
       const write = (line: string) => writer.write(new TextEncoder().encode(`${line}\r\n`));
@@ -99,6 +132,8 @@ export function smtpBinding(env: SmtpEnv): EmailBinding {
           writer.releaseLock();
           reader.releaseLock();
           socket = socket.startTls();
+          pending = new Uint8Array(0);
+          offset = 0;
           writer = socket.writable.getWriter();
           reader = socket.readable.getReader();
           await write("EHLO localhost");
