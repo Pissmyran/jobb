@@ -131,6 +131,14 @@ If you do not want values such as passwords in the compose file, put them as `NA
 - **Limits:** `wrangler dev` is a development server that runs one process on one machine. That is enough for one person. StudentConsulting's pages can change, and then the search can stop working until the image is updated. Jobb then stops rather than guessing, and the error shows under **Körningar** (runs).
 - **Troubleshooting:** `docker compose logs -f`. Every run, application and attempt with its error code is under **Körningar** in the interface.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:36f27788d11d1586b9112eb839c3d2c1032c329225dc8055f45d24d8b7e4cc8e -->
+
+Wrangler listens on container loopback port 18787, which is reserved and cannot be used as `PORT`. Only application paths are exposed on `PORT`. Local Explorer is disabled and the scheduler calls the private port.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## Changelog
 
 **1.1.3**

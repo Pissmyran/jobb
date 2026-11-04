@@ -68,7 +68,4 @@ chmod 600 "$vars"
 
 npx wrangler d1 migrations apply DB --local --persist-to /data --config wrangler.container.jsonc
 
-node docker/scheduler.mjs &
-exec npx wrangler dev --local --persist-to /data --config wrangler.container.jsonc \
-  --ip 0.0.0.0 --port "${PORT:-8787}" --test-scheduled \
-  --env-file "$vars" --show-interactive-dev-session=false
+exec node docker/server.mjs "$vars"

@@ -50,6 +50,14 @@ The code contains no account details. Wherever a value of your own is needed, su
 
 Jobb is available as a ready-made image on Docker Hub, `docker.io/driftaegis/jobb`. You do not need to build anything: `docker-compose.yml` names the image like this, and `docker compose up -d` pulls it.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:52fdbafd196b427d35d0f3f1954b1b8a4bc2b4bb36d171e777fe1634e1e95e25 -->
+
+The container exposes only application paths. Wrangler listens on loopback port 18787.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 In `docker-compose.yml`:
 
 ```yaml

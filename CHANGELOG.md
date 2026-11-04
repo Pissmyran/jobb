@@ -2,6 +2,16 @@
 
 Versions follow [semver](https://semver.org). The Docker image is tagged `X.Y.Z`, `X.Y`, `X` and `latest`.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:11c6433a302b8d64eff2292f8a155fefe7f9ea646ee3ba539e46bad9ccdf2e27 -->
+
+## 1.1.4 – 2026-11-03
+
+- Restrict the container listener to application routes, keep Wrangler on loopback, disable Local Explorer, and send scheduled triggers to the private runtime.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## 1.1.3 – 2026-10-21
 
 - The image runs on `node:24-trixie-slim`: Node 24, the current LTS, on Debian 13 (stable). Chrome's libraries use Debian 13's package names.

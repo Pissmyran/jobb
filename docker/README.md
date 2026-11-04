@@ -129,6 +129,14 @@ Vill du inte ha värden som lösenord i compose-filen lägger du dem som `NAMN=v
 - **Begränsningar:** `wrangler dev` är en utvecklingsserver som kör en process på en maskin. Det räcker för en person. StudentConsultings sidor kan ändras, och då kan sökningen sluta fungera tills imagen uppdateras. Jobb stoppar då hellre än gissar, och felet syns under **Körningar**.
 - **Felsökning:** `docker compose logs -f`. Varje körning, ansökan och försök med felkod finns under **Körningar** i gränssnittet.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1140af0e54da21e6262dbe54d7183ae940205a91efe850bb0ed4737e802457eb -->
+
+Wrangler lyssnar på containerns loopback-port 18787, som är reserverad och inte kan användas som `PORT`. Endast applikationens vägar exponeras på `PORT`. Local Explorer är avstängd och schemaläggaren anropar den privata porten.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## Changelog
 
 **1.1.3**

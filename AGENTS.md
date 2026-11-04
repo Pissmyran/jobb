@@ -13,6 +13,14 @@ Read `.coderabbit.yaml` for repository-specific review guidance, including histo
 - [docs/automation.md](docs/automation.md) och [docs/providers.md](docs/providers.md): körningarna och StudentConsulting.
 - [docs/authentication.md](docs/authentication.md) och [docs/operations.md](docs/operations.md): inloggning, nycklar och drift.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:7e402406a91620fc291f921e62efd5ff94c9bcc2ecb84d55337e2595a5d30b41 -->
+
+Docker: Wrangler listens on loopback port 18787. Update the ingress route list when adding application routes; the scheduler uses the private runtime listener.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## Kommandon
 
 Installera, typkontrollera och testa (pnpm enligt `packageManager`):

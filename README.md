@@ -50,6 +50,14 @@ Koden innehåller inga kontouppgifter. Där ett eget värde behövs, som domän,
 
 Jobb finns som färdig image på Docker Hub, `docker.io/driftaegis/jobb`. Du behöver inte bygga något själv: i `docker-compose.yml` står imagen så här, och `docker compose up -d` hämtar den.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:9bac75181f95fee294191e3aec000925feb216941f21f0ce6a4e55d7a2f36c6a -->
+
+Containern exponerar endast applikationens vägar. Wrangler lyssnar på loopback-port 18787.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 I `docker-compose.yml`:
 
 ```yaml
