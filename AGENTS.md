@@ -22,6 +22,14 @@ P="npx --yes $(node -p "require('./package.json').packageManager")"
 $P install && $P typecheck && $P test
 ```
 
+Före en push körs också, för det du ändrat:
+
+```bash
+npx --yes prettier@latest --check .
+git diff --name-only origin/main -- '*.sh' | xargs -r shellcheck
+git diff --name-only origin/main -- '*.json' | xargs -r -n1 jq empty
+```
+
 ## Regler
 
 - **Ingång:** `apps/web/src/index.ts`. Hanterare: fetch, scheduled `0 9 10-13 * *`, Workflow `JobAutomationWorkflow`. Bindningar: D1, R2, Browser Rendering, send_email, Secrets Store `JOBB_CONFIG_KEY`.
@@ -32,5 +40,6 @@ $P install && $P typecheck && $P test
 - **Inloggning:** i produktion är Cloudflare Access enda inloggningen och Workern verifierar Access-JWT:n själv. `AUTH_MODE=password` finns bara för egen drift.
 - **Konfigurationen** i D1 är krypterad med AES-GCM med en nyckel härledd från `JOBB_CONFIG_KEY` (rotation via `JOBB_CONFIG_KEY_PREVIOUS`). `CONFIG_NAMESPACE` ändras aldrig för en befintlig databas.
 - **Migreringar:** en som lägger till körs före deployen.
+- **Dokumentation:** den är på svenska, och `docs/eng/` är den engelska spegeln (`README.md` är `docs/eng/index.md`, `docker/README.md` är `docs/eng/docker.md`). Uppdatera båda i samma pull request och håll båda `nav`-delarna i `zensical.toml` i synk.
 - **Release:** versionen finns i `package.json`.
 - **Extra noggrant:** ansökningsflödet (kvot, reservationer, omförsök), autentisering, krypterad konfiguration och migreringar.

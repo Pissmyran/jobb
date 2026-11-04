@@ -6,6 +6,7 @@
 pnpm install --frozen-lockfile
 pnpm typecheck
 pnpm test
+npx --yes prettier@latest --check .
 ```
 
 ## Local development
@@ -15,7 +16,7 @@ pnpm test
 
 ## Deployment
 
-Production is deployed from a rendered copy with your own values, either from your computer or with Workers Builds when a PR is merged to `main`; see the [home page](index.md). CI on GitHub runs tests, the Docker build and CodeQL. There is no preview environment.
+Production is deployed from a rendered copy with your own values, either from your computer or with Workers Builds when a PR is merged to `main`; see the [home page](index.md). GitHub Actions builds the documentation site, mirrors the wiki, creates releases and publishes the Docker image, and CodeQL scans the code. CI runs no tests, so the checks above are run locally before every push. There is no preview environment.
 
 ## Migrations
 
