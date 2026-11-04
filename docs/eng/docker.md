@@ -127,7 +127,7 @@ If you do not want values such as passwords in the compose file, put them as `NA
   - The password session is a signed cookie (HMAC-SHA256, `HttpOnly`, `SameSite=Strict`). Access mode checks the RS256 signature, issuer and AUD.
   - Changing requests require same-origin.
   - The settings are encrypted with AES-GCM, with a key derived from `JOBB_CONFIG_KEY` with HKDF. Passwords are never shown again after they are saved.
-- **The image** is based on `node:24-trixie-slim` (Node LTS on Debian stable), runs as the `node` user and has a healthcheck against `/api/health`. It only contains source code with placeholders; your values are filled in when the container starts.
+- **The image** is based on `node:26-trixie-slim` (Node 26 on Debian stable), runs as the `node` user and has a healthcheck against `/api/health`. It only contains source code with placeholders; your values are filled in when the container starts.
 - **Limits:** `wrangler dev` is a development server that runs one process on one machine. That is enough for one person. StudentConsulting's pages can change, and then the search can stop working until the image is updated. Jobb then stops rather than guessing, and the error shows under **Körningar** (runs).
 - **Troubleshooting:** `docker compose logs -f`. Every run, application and attempt with its error code is under **Körningar** in the interface.
 

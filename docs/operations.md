@@ -15,7 +15,7 @@ pnpm test
 
 ## Driftsättning
 
-Produktionen driftsätts från en renderad kopia med dina egna värden, antingen från din dator eller med Workers Builds när en PR mergas till `main`; se `README.md`. CI på GitHub kör tester, Docker-bygge och CodeQL. Det finns ingen förhandsmiljö.
+Produktionen driftsätts från en renderad kopia med dina egna värden, antingen från din dator eller med Workers Builds när en PR mergas till `main`; se `README.md`. GitHub Actions bygger dokumentationssajten, speglar wikin, skapar releaser och publicerar Docker-imagen, och CodeQL skannar koden. CI kör inga tester, så kontrollerna ovan körs lokalt före varje push. Det finns ingen förhandsmiljö.
 
 ## Migreringar
 

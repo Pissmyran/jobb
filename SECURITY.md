@@ -1,21 +1,9 @@
-# Security Policy
+# Säkerhetspolicy
 
-## Supported Versions
+## Versioner som får säkerhetsrättningar
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Bara den senaste versionen får säkerhetsrättningar. Docker-imagen taggas `X.Y.Z`, `X.Y`, `X` och `latest`; följ `1` eller `latest` för att få rättningarna.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Rapportera en sårbarhet
 
-## Reporting a Vulnerability
-
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Rapportera privat via fliken **Security** i repot (*Report a vulnerability*), inte som en öppen issue. Ta aldrig med riktiga lösenord, nycklar eller personuppgifter i rapporten.
