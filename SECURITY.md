@@ -1,9 +1,9 @@
-# Säkerhetspolicy
+# Security Policy
 
-## Versioner som får säkerhetsrättningar
+## Supported Versions
 
-Bara den senaste versionen får säkerhetsrättningar. Docker-imagen taggas `X.Y.Z`, `X.Y`, `X` och `latest`; följ `1` eller `latest` för att få rättningarna.
+Only the latest release receives security fixes. The Docker image is tagged `X.Y.Z`, `X.Y`, `X` and `latest`; use `latest` or the newest `X.Y.Z` to receive them.
 
-## Rapportera en sårbarhet
+## Reporting a Vulnerability
 
-Rapportera privat via fliken **Security** i repot (*Report a vulnerability*), inte som en öppen issue. Ta aldrig med riktiga lösenord, nycklar eller personuppgifter i rapporten.
+Report privately through the **Security** tab of this repository (_Report a vulnerability_), not as a public issue. Never include real passwords, keys or personal data in a report.

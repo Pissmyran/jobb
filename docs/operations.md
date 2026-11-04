@@ -6,6 +6,7 @@
 pnpm install --frozen-lockfile
 pnpm typecheck
 pnpm test
+npx --yes prettier@latest --check .
 ```
 
 ## Lokal utveckling

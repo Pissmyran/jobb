@@ -22,7 +22,13 @@ P="npx --yes $(node -p "require('./package.json').packageManager")"
 $P install && $P typecheck && $P test
 ```
 
-Före en push körs också `npx --yes prettier@latest --check .`, `shellcheck` på ändrade `.sh`-filer och `jq empty` på ändrade `.json`-filer.
+Före en push körs också, för det du ändrat:
+
+```bash
+npx --yes prettier@latest --check .
+git diff --name-only origin/main -- '*.sh' | xargs -r shellcheck
+git diff --name-only origin/main -- '*.json' | xargs -r -n1 jq empty
+```
 
 ## Regler
 
