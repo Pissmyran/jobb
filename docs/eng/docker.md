@@ -8,7 +8,7 @@ Everything runs in the container, including the browser that searches the jobs. 
 
 ## Getting started
 
-The image is on Docker Hub as `docker.io/pissmyran/jobb`. The compose file below pulls it from there, so you neither clone the repo nor build anything.
+The image is on Docker Hub as `docker.io/driftaegis/jobb`. The compose file below pulls it from there, so you neither clone the repo nor build anything.
 
 1. **Install Docker.** On Windows and Mac: [Docker Desktop](https://www.docker.com/products/docker-desktop/). On Linux: the `docker.io` package (Debian/Ubuntu) or equivalent. Podman works too.
 2. **Create a folder** with a file in it named `docker-compose.yml`. Paste the content below.
@@ -20,7 +20,7 @@ The image is on Docker Hub as `docker.io/pissmyran/jobb`. The compose file below
 ```yaml
 services:
   jobb:
-    image: docker.io/pissmyran/jobb:1
+    image: docker.io/driftaegis/jobb:1
     restart: unless-stopped
     ports:
       - "8787:8787"
