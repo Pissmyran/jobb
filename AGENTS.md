@@ -1,46 +1,27 @@
-# AGENTS.md – jobb
+# AGENTS.md
 
-En månatlig jobbansökningshjälp på Cloudflare Workers, plus en Docker-bild för egen drift.
+Scope
+- Work only in this repo. Never read, change or open PRs against other repos.
+- Do exactly what is asked. No extra files, lines, steps or config.
+- Repo-specific rules: see REPO.md.
 
-Läs de gemensamma reglerna i början av varje session: [GOVERNANCE.md](https://raw.githubusercontent.com/pissmyran/.github/main/GOVERNANCE.md) och [SERVICES.md](https://raw.githubusercontent.com/pissmyran/.github/main/SERVICES.md). Läs `README.md` före större ändringar.
+Workflow
+- Never change workflows. Only Renovate and Dependabot may.
+- Never work around rulesets, checks or branch rules.
+- Ask before deviating from a tool's standard setup.
 
-## Läs vid behov
+Git and review
+- Squash merge, signed commits, auto-merge on.
+- A review conversation is resolved only after the comment is read in full and the flagged code is analyzed and fixed.
+- Nothing personal in code or docs. Generic placeholders only.
 
-Read `.coderabbit.yaml` for repository-specific review guidance, including historical imports, monthly exports, dashboard state and documentation mirrors. Shared review settings remain in `pissmyran/coderabbit`.
+Reporting and context
+- Report only the result, and only when done or blocked. No progress updates, no recaps.
+- Never poll. Never subscribe to PR, CI or repository activity. Never read GitHub notifications.
+- React only to warnings, errors and security alerts. Ignore routine confirmations such as bot comments and merge or subscription notices.
+- Load only the tools, files and history the current task needs.
 
-- [docs/oversikt.md](docs/oversikt.md): karta över dokumentationen.
-- [docs/architecture.md](docs/architecture.md): bindningar, state och säkerhet.
-- [docs/automation.md](docs/automation.md) och [docs/providers.md](docs/providers.md): körningarna och StudentConsulting.
-- [docs/authentication.md](docs/authentication.md) och [docs/operations.md](docs/operations.md): inloggning, nycklar och drift.
-
-## Kommandon
-
-Installera, typkontrollera och testa (pnpm enligt `packageManager`):
-
-```bash
-P="npx --yes $(node -p "require('./package.json').packageManager")"
-$P install && $P typecheck && $P test
-```
-
-Före en push körs också, för det du ändrat:
-
-```bash
-npx --yes prettier@latest --check .
-git diff --name-only origin/main -- '*.sh' | xargs -r shellcheck
-git diff --name-only origin/main -- '*.json' | xargs -r -n1 jq empty
-```
-
-## Regler
-
-- **Arbeta självständigt:** gör uppgiften själv i stället för att lämna tillbaka steg till användaren. Fråga bara om beslut som verkligen är deras. Är något blockerat, säg tydligt vad och varför; säg aldrig åt användaren att göra jobbet eller kontrollera sådant du kan kontrollera själv.
-- **Ingång:** `apps/web/src/index.ts`. Hanterare: fetch, scheduled `0 9 10-13 * *`, Workflow `JobAutomationWorkflow`. Bindningar: D1, R2, Browser Rendering, send_email, Secrets Store `JOBB_CONFIG_KEY`.
-- **Flödet:** tio lämpliga jobb i månaden söks på StudentConsulting av ett Workflow med `@cloudflare/playwright` över Browser Rendering och samlas i `jobbansokningar_ÅÅÅÅ-MM-DD.txt` (jobb-ID, jobbtyp, ort, omfattning) som kan laddas ned och mejlas. Ingen rapportering till Arbetsförmedlingen.
-- **Månadsgränsen** är exakt tio verifierade ansökningar. Ett osäkert resultat stoppar och räknas aldrig som lyckat eller misslyckat; skillnaden mellan applied, not_applied och unknown bevaras.
-- **Webbläsarlogiken** stannar i `packages/studentconsulting`. Browser Rendering kostar per webbläsartimme: håll sessionerna korta och stäng dem även vid fel.
-- **D1** är enda sanningen om körningar och ansökningar; R2 innehåller bara bevis.
-- **Inloggning:** i produktion är Cloudflare Access enda inloggningen och Workern verifierar Access-JWT:n själv. `AUTH_MODE=password` finns bara för egen drift.
-- **Konfigurationen** i D1 är krypterad med AES-GCM med en nyckel härledd från `JOBB_CONFIG_KEY` (rotation via `JOBB_CONFIG_KEY_PREVIOUS`). `CONFIG_NAMESPACE` ändras aldrig för en befintlig databas.
-- **Migreringar:** en som lägger till körs före deployen.
-- **Dokumentation:** den är på svenska, och `docs/eng/` är den engelska spegeln (`README.md` är `docs/eng/index.md`, `docker/README.md` är `docs/eng/docker.md`). Uppdatera båda i samma pull request och håll båda `nav`-delarna i `zensical.toml` i synk.
-- **Release:** versionen finns i `package.json`.
-- **Extra noggrant:** ansökningsflödet (kvot, reservationer, omförsök), autentisering, krypterad konfiguration och migreringar.
+Language
+- Code, commits, PRs, labels: English.
+- Documentation: English first, Swedish copy in /sv.
+- Talk to the owner in Swedish.
