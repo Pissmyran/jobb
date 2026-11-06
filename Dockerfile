@@ -7,7 +7,7 @@
 #
 # BROWSER_MODE=bundled (default) uses the Chrome installed below, so job
 # searches work without any Cloudflare account.
-FROM node:26.13.0-trixie-slim@sha256:e4db4c914bf8ad241bd24804fc25d272d89bad97e68cdc8a1414862790a02c39
+FROM node:26.13.0-trixie-slim@sha256:5adad64f9a1fca2d51972caa65983634c8a774eb300d72b20f7f2a0f60368072
 
 ENV NODE_ENV=production \
     WRANGLER_SEND_METRICS=false \

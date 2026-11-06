@@ -6,7 +6,7 @@ Allt körs i containern, inklusive webbläsaren som söker jobben. Du behöver i
 
 ## Kom igång
 
-Imagen ligger på Docker Hub som `docker.io/driftaegis/jobb`. Compose-filen nedan hämtar den därifrån, så du behöver varken klona repot eller bygga något.
+Imagen ligger på Docker Hub som `docker.io/pissmyran/jobb`. Compose-filen nedan hämtar den därifrån, så du behöver varken klona repot eller bygga något.
 
 1. **Installera Docker.** På Windows och Mac: [Docker Desktop](https://www.docker.com/products/docker-desktop/). På Linux: paketet `docker.io` (Debian/Ubuntu) eller motsvarande. Podman fungerar också.
 2. **Skapa en mapp** och en fil i den som heter `docker-compose.yml`. Klistra in innehållet nedan.
@@ -18,7 +18,7 @@ Imagen ligger på Docker Hub som `docker.io/driftaegis/jobb`. Compose-filen neda
 ```yaml
 services:
   jobb:
-    image: docker.io/driftaegis/jobb:1
+    image: docker.io/pissmyran/jobb:1
     restart: unless-stopped
     ports:
       - "8787:8787"

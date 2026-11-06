@@ -50,12 +50,12 @@ Koden innehåller inga kontouppgifter. Där ett eget värde behövs, som domän,
 
 ## Köra med Docker
 
-Jobb finns som färdig image på Docker Hub, `docker.io/driftaegis/jobb`. Du behöver inte bygga något själv: i `docker-compose.yml` står imagen så här, och `docker compose up -d` hämtar den.
+Jobb finns som färdig image på Docker Hub, `docker.io/pissmyran/jobb`. Du behöver inte bygga något själv: i `docker-compose.yml` står imagen så här, och `docker compose up -d` hämtar den.
 
 I `docker-compose.yml`:
 
 ```yaml
-    image: docker.io/driftaegis/jobb:1
+    image: docker.io/pissmyran/jobb:1
 ```
 
 Taggen `1` ger alla uppdateringar inom version 1; `X.Y` ger bara rättningar och `X.Y.Z` exakt en version. Alla inställningar beskrivs i [docker/README.md](docker/README.md), och ändringarna listas i [CHANGELOG.md](CHANGELOG.md). Vill du bygga imagen själv från källkoden: `docker build -t jobb .` i repots rot.
