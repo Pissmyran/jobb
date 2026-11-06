@@ -31,7 +31,7 @@ if [ -f "$settings" ]; then
     case "$line" in
       [A-Z]*=*)
         name=${line%%=*}
-        [ -n "$(printenv "$name" || true)" ] || export "$line"
+        [ -n "$(printenv "$name" || true)" ] || export "$name=${line#*=}"
         ;;
     esac
   done <"$settings"
