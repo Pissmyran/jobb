@@ -42,5 +42,6 @@ git diff --name-only origin/main -- '*.json' | xargs -r -n1 jq empty
 - **Konfigurationen** i D1 är krypterad med AES-GCM med en nyckel härledd från `JOBB_CONFIG_KEY` (rotation via `JOBB_CONFIG_KEY_PREVIOUS`). `CONFIG_NAMESPACE` ändras aldrig för en befintlig databas.
 - **Migreringar:** en som lägger till körs före deployen.
 - **Dokumentation:** den är på svenska, och `docs/eng/` är den engelska spegeln (`README.md` är `docs/eng/index.md`, `docker/README.md` är `docs/eng/docker.md`). Uppdatera båda i samma pull request och håll båda `nav`-delarna i `zensical.toml` i synk.
+- **Docker-bild:** publiceras som `docker.io/pissmyran/jobb` av `.github/workflows/docker.yml`. `docker-compose.yml` låser den med tagg och digest; håll taggen, digesten, `docker/README.md` och `README.md` i synk.
 - **Release:** versionen finns i `package.json`.
 - **Extra noggrant:** ansökningsflödet (kvot, reservationer, omförsök), autentisering, krypterad konfiguration och migreringar.
