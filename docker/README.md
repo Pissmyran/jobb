@@ -6,7 +6,7 @@ Allt körs i containern, inklusive webbläsaren som söker jobben. Du behöver i
 
 ## Kom igång
 
-Imagen ligger på Docker Hub som `docker.io/driftaegis/jobb`. Compose-filen nedan hämtar den därifrån, så du behöver varken klona repot eller bygga något.
+Imagen ligger på Docker Hub som `docker.io/pissmyran/jobb`. Compose-filen nedan hämtar den därifrån, så du behöver varken klona repot eller bygga något.
 
 1. **Installera Docker.** På Windows och Mac: [Docker Desktop](https://www.docker.com/products/docker-desktop/). På Linux: paketet `docker.io` (Debian/Ubuntu) eller motsvarande. Podman fungerar också.
 2. **Skapa en mapp** och en fil i den som heter `docker-compose.yml`. Klistra in innehållet nedan.
@@ -18,7 +18,7 @@ Imagen ligger på Docker Hub som `docker.io/driftaegis/jobb`. Compose-filen neda
 ```yaml
 services:
   jobb:
-    image: docker.io/driftaegis/jobb:1
+    image: docker.io/pissmyran/jobb:1
     restart: unless-stopped
     ports:
       - "8787:8787"
@@ -112,7 +112,7 @@ Vill du inte ha värden som lösenord i compose-filen lägger du dem som `NAMN=v
 
 - Allt ligger i volymen som är monterad på `/data`: databasen (SQLite), bevisen för varje ansökan, Workflow-tillståndet och krypteringsnyckeln.
 - **Säkerhetskopiera:** `docker compose stop`, kopiera volymen och kör `docker compose start`. Följ med `/data/config-key`, annars går de sparade inställningarna inte att läsa.
-- **Uppdatera:** `docker compose pull && docker compose up -d`. Databasmigreringar körs automatiskt vid start.
+- **Uppdatera:** `docker compose pull && docker compose up -d`. Databasmigreringar körs automatiskt vid start. Imagen i `docker-compose.yml` är låst med en digest (`@sha256:…`), så `pull` hämtar bara just den versionen. För att uppgradera, byt digesten mot den som visas av `docker pull docker.io/pissmyran/jobb:1 && docker image inspect --format '{{index .RepoDigests 0}}' docker.io/pissmyran/jobb:1` (med Podman: byt `docker` mot `podman`), eller ta bort `@sha256:…` för att följa taggen.
 - **Versioner:** taggarna följer semver. `1` ger alla uppdateringar inom version 1, `1.0` bara rättningar och `1.0.0` exakt en version.
 
 ## Teknisk översikt
@@ -125,7 +125,7 @@ Vill du inte ha värden som lösenord i compose-filen lägger du dem som `NAMN=v
   - Lösenordssessionen är en signerad cookie (HMAC-SHA256, `HttpOnly`, `SameSite=Strict`). Access-läget kontrollerar RS256-signatur, utfärdare och AUD.
   - Ändrande anrop kräver same-origin.
   - Inställningarna krypteras med AES-GCM, med en nyckel som härleds från `JOBB_CONFIG_KEY` med HKDF. Lösenord visas aldrig igen efter att de har sparats.
-- **Imagen** bygger på `node:24-trixie-slim` (Node LTS på Debian stable), kör som användaren `node` och har en healthcheck mot `/api/health`. Den innehåller bara källkod med platshållare; dina värden fylls i när containern startar.
+- **Imagen** bygger på `node:26-trixie-slim` (Node 26 på Debian stable), kör som användaren `node` och har en healthcheck mot `/api/health`. Den innehåller bara källkod med platshållare; dina värden fylls i när containern startar.
 - **Begränsningar:** `wrangler dev` är en utvecklingsserver som kör en process på en maskin. Det räcker för en person. StudentConsultings sidor kan ändras, och då kan sökningen sluta fungera tills imagen uppdateras. Jobb stoppar då hellre än gissar, och felet syns under **Körningar**.
 - **Felsökning:** `docker compose logs -f`. Varje körning, ansökan och försök med felkod finns under **Körningar** i gränssnittet.
 

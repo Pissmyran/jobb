@@ -70,7 +70,9 @@ export function smtpBinding(env: SmtpEnv): EmailBinding {
       const read = async (): Promise<Reply> => {
         for (;;) {
           const lines = buffer.split("\r\n");
-          const done = lines.findIndex((line) => /^\d{3} /.test(line));
+          const done = lines.findIndex(
+            (line, index) => index < lines.length - 1 && /^\d{3} /.test(line),
+          );
           if (done >= 0) {
             buffer = lines.slice(done + 1).join("\r\n");
             return {
@@ -96,6 +98,9 @@ export function smtpBinding(env: SmtpEnv): EmailBinding {
         if (port !== 465) {
           await write("STARTTLS");
           await expect(220, "STARTTLS");
+          // Flush any incomplete UTF-8 and reject all plaintext read ahead of TLS.
+          const pending = decoder.decode();
+          if (buffer || pending) throw new Error("SMTP STARTTLS: oväntade data före TLS.");
           writer.releaseLock();
           reader.releaseLock();
           socket = socket.startTls();

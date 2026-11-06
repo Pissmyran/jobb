@@ -5,6 +5,7 @@
 set -eu
 
 # Saved settings from a one-time /data/import.env (see import-settings.sh).
+# shellcheck source=import-settings.sh
 . /opt/app/docker/import-settings.sh
 
 : "${PUBLIC_URL:=http://localhost:8787}"
@@ -36,7 +37,8 @@ if [ -z "${JOBB_CONFIG_KEY:-}" ]; then
 fi
 
 # Placeholder values for the rendered copy; resource ids only matter on Cloudflare.
-export PUBLIC_HOST=$(printf '%s' "$PUBLIC_URL" | sed 's|^[a-z]*://||; s|/.*||')
+PUBLIC_HOST=$(printf '%s' "$PUBLIC_URL" | sed 's|^[a-z]*://||; s|/.*||')
+export PUBLIC_HOST
 export CF_ACCESS_TEAM_DOMAIN="${CF_ACCESS_TEAM_DOMAIN:-}" CF_ACCESS_AUD="${CF_ACCESS_AUD:-}"
 export D1_DATABASE_NAME=jobb D1_DATABASE_ID=local SECRETS_STORE_ID=local
 export CONFIG_NAMESPACE="${CONFIG_NAMESPACE:-Jobb}" SITE_FAMILY="${SITE_FAMILY:-Skog}"

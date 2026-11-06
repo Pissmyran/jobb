@@ -48,12 +48,12 @@ Koden innehåller inga kontouppgifter. Där ett eget värde behövs, som domän,
 
 ## Köra med Docker
 
-Jobb finns som färdig image på Docker Hub, `docker.io/driftaegis/jobb`. Du behöver inte bygga något själv: i `docker-compose.yml` står imagen så här, och `docker compose up -d` hämtar den.
+Jobb finns som färdig image på Docker Hub, `docker.io/pissmyran/jobb`. Du behöver inte bygga något själv: i `docker-compose.yml` står imagen så här, och `docker compose up -d` hämtar den.
 
 I `docker-compose.yml`:
 
 ```yaml
-    image: docker.io/driftaegis/jobb:1
+    image: docker.io/pissmyran/jobb:1
 ```
 
 Taggen `1` ger alla uppdateringar inom version 1; `X.Y` ger bara rättningar och `X.Y.Z` exakt en version. Alla inställningar beskrivs i [docker/README.md](docker/README.md), och ändringarna listas i [CHANGELOG.md](CHANGELOG.md). Vill du bygga imagen själv från källkoden: `docker build -t jobb .` i repots rot.
@@ -63,6 +63,8 @@ Taggen `1` ger alla uppdateringar inom version 1; `X.Y` ger bara rättningar och
 CodeRabbit ärver gemensamma inställningar från `pissmyran/coderabbit`. `.coderabbit.yaml` lägger till granskningsregler för jobb, inklusive historisk import, månadsfiler, översiktens state och dokumentationens engelska speglar.
 
 Frågor och idéer tas i [Discussions](https://github.com/pissmyran/.github/discussions), fel och förslag som issues här. Läs [CONTRIBUTING.md](https://github.com/pissmyran/.github/blob/main/CONTRIBUTING.md) innan du öppnar en pull request. Säkerhetsproblem rapporteras privat via fliken Security.
+
+**Publicera Docker-imagen:** `.github/workflows/docker.yml` hämtar Docker Hub-namnrymden från repo-variabeln `DOCKERHUB_USERNAME`, image-namnet från GitHub-repots namn och token från hemligheten `DOCKERHUB_TOKEN` (token ligger i miljön `release`). Saknas variabeln stoppas körningen direkt med ett tydligt fel, innan något byggs eller publiceras. GitHub-releasen finns redan då: sätt variabeln och kör om workflowen, som pushar den exakta versionen och de rörliga taggar den har rätt att flytta. De rörliga taggarna (`minor`, `major`, `latest`) flyttas bara av den nyaste stabila releasen de står för: en prerelease flyttar ingen, och en omkörning av en äldre release flyttar bara `minor`- eller `major`-taggen i sin egen serie om den fortfarande är nyast där (aldrig `latest`). En version utan `v`-releasetagg på den commit som publiceras flyttar ingen rörlig tagg. Releasetaggarna slås upp på nytt före och efter varje push av en rörlig tagg; misslyckas uppslagningen, eller dyker en nyare release upp under tiden, blir körningen röd, och rörliga taggar som redan pushats ligger kvar, så kontrollera dem innan du åtgärdar. En missad release (en ersatt `Release`-körning) återställs enligt [drift](docs/operations.md).
 
 ## Licens
 
