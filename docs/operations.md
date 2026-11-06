@@ -18,6 +18,16 @@ npx --yes prettier@latest --check .
 
 Produktionen driftsätts från en renderad kopia med dina egna värden, antingen från din dator eller med Workers Builds när en PR mergas till `main`; se `README.md`. GitHub Actions bygger dokumentationssajten, speglar wikin, skapar releaser och publicerar Docker-imagen, och CodeQL skannar koden. CI kör inga tester, så kontrollerna ovan körs lokalt före varje push. Det finns ingen förhandsmiljö.
 
+## Publicera Docker-imagen
+
+`.github/workflows/docker.yml` bygger och publicerar imagen när en versionstagg (`v1.2.3`) pushas, eller när `release.yml` anropar den.
+
+- **Namn:** Docker Hub-namnrymden kommer från repo-variabeln `DOCKERHUB_USERNAME` och repo-namnet från GitHub (`github.event.repository.name`). Inget av dem står i workflowen. Imagen heter `docker.io/<DOCKERHUB_USERNAME>/<repo>`.
+- **Token:** hemligheten `DOCKERHUB_TOKEN` ligger i miljön `release`.
+- **Saknad variabel:** körningen stoppas direkt med ett tydligt fel, innan något byggs eller publiceras. GitHub-releasen finns redan då. Sätt variabeln och kör om workflowen.
+- **Taggar:** den exakta versionen pushas först. De rörliga taggarna (`minor`, `major`, `latest`) flyttas bara av den nyaste stabila releasen de står för; en äldre version eller en prerelease flyttar ingen. En misslyckad push av en rörlig tagg stoppar inte de andra men gör jobbet rött, och en omkörning pushar alla taggar igen.
+- **Samtidighet:** varje tagg har en egen körning, och ingen körning avbryts.
+
 ## Migreringar
 
 Workers Builds kör inte D1-migreringarna, så de körs för hand från en renderad kopia:
