@@ -1,9 +1,21 @@
 # Security Policy
 
-## Supported Versions
+## Reporting a vulnerability
 
-Only the latest release receives security fixes. The Docker image is tagged `X.Y.Z`, `X.Y`, `X` and `latest`; use `latest` or the newest `X.Y.Z` to receive them.
+Do not open a public issue for a vulnerability.
 
-## Reporting a Vulnerability
+Report it privately through GitHub:
 
-Report privately through the **Security** tab of this repository (_Report a vulnerability_), not as a public issue. Never include real passwords, keys or personal data in a report.
+1. Open the Security tab of this repository.
+2. Click "Report a vulnerability".
+3. Describe the problem and how to reproduce it.
+
+Reports are handled by a single maintainer on a best-effort basis. There is no guaranteed response time.
+
+## Supported versions
+
+Only the latest release and the default branch receive security fixes.
+
+## Scope
+
+Vulnerabilities in this repository's own code and configuration. Problems in third-party dependencies should be reported to those projects.
