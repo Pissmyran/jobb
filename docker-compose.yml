@@ -52,7 +52,7 @@ services:
       - jobb-data:/data # database, evidence and settings
 
   tunnel:
-    image: docker.io/cloudflare/cloudflared:latest@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    image: docker.io/cloudflare/cloudflared:latest@sha256:b94b96edf2c9c4360f8879c8580cfaa99077f19c849ec595ca2f711b27d4f344
     profiles: ["tunnel"]
     restart: unless-stopped
     command: tunnel --no-autoupdate run
