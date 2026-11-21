@@ -19,11 +19,16 @@
 // per nav title), with _Sidebar.md for the menu and _Footer.md saying where to
 // make changes. .github/workflows/wiki.yml writes it on every push to main.
 import {
+  closeSync,
+  constants,
   cpSync,
   existsSync,
+  fstatSync,
   mkdirSync,
+  openSync,
   readFileSync,
   readdirSync,
+  readSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -119,6 +124,30 @@ const rewrite = (src, dst, text) => {
     .join("\n");
 };
 
+// Bound reads independently of the reported size, which can change or be wrong.
+const readMarkdown = (src) => {
+  const maxBytes = 10 * 1024 * 1024;
+  if (constants.O_NOFOLLOW === undefined || constants.O_NONBLOCK === undefined) {
+    throw new Error("Safe Markdown file opening is not supported on this platform");
+  }
+  const fd = openSync(src, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+  try {
+    if (!fstatSync(fd).isFile()) throw new Error(`Not a regular Markdown file: ${src}`);
+    const chunks = [];
+    let total = 0;
+    while (total <= maxBytes) {
+      const buffer = Buffer.allocUnsafe(Math.min(64 * 1024, maxBytes + 1 - total));
+      const bytesRead = readSync(fd, buffer, 0, buffer.length, null);
+      if (bytesRead === 0) return Buffer.concat(chunks, total).toString("utf8");
+      total += bytesRead;
+      if (total > maxBytes) throw new Error(`Markdown file exceeds ${maxBytes} bytes: ${src}`);
+      chunks.push(buffer.subarray(0, bytesRead));
+    }
+  } finally {
+    closeSync(fd);
+  }
+};
+
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 let count = 0;
@@ -126,7 +155,7 @@ for (const [src, dst] of pages) {
   if (wiki && !onWiki(dst)) continue;
   const target = posix.join(out, wiki ? `${wikiName(dst)}.md` : dst);
   mkdirSync(posix.dirname(target), { recursive: true });
-  if (src.endsWith(".md")) writeFileSync(target, rewrite(src, dst, readFileSync(src, "utf8")));
+  if (src.endsWith(".md")) writeFileSync(target, rewrite(src, dst, readMarkdown(src)));
   else cpSync(src, target);
   count++;
 }
