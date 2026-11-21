@@ -846,10 +846,18 @@ export function normalizeStudentConsultingUrl(value: string): string | null {
     if (parsed.protocol !== "https:") return null;
     if (!isHostOrSubdomain(parsed.hostname, STUDENTCONSULTING_DOMAIN)) return null;
 
-    return new URL(`${parsed.pathname}${parsed.search}${parsed.hash}`, DEFAULT_BASE_URL).toString();
+    return toStudentConsultingMainOrigin(parsed);
   } catch {
     return null;
   }
+}
+
+function toStudentConsultingMainOrigin(parsed: URL): string | null {
+  const normalized = new URL(DEFAULT_BASE_URL);
+  normalized.pathname = parsed.pathname;
+  normalized.search = parsed.search;
+  normalized.hash = parsed.hash;
+  return normalized.origin === DEFAULT_BASE_URL ? normalized.toString() : null;
 }
 
 export function normalizeStudentConsultingJobUrl(value: string): string | null {
@@ -904,7 +912,7 @@ function normalizeStudentConsultingMainOriginUrl(value: string): string | null {
     if (parsed.origin !== expected.origin) return null;
     if (parsed.username || parsed.password) return null;
 
-    return new URL(`${parsed.pathname}${parsed.search}${parsed.hash}`, DEFAULT_BASE_URL).toString();
+    return toStudentConsultingMainOrigin(parsed);
   } catch {
     return null;
   }

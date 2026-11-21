@@ -38,6 +38,26 @@ describe("trusted URL validation", () => {
     ).toBeNull();
   });
 
+  it("preserves authority-like pathnames on the trusted origin across normalization", () => {
+    const input =
+      "https://id.studentconsulting.com//example.com/sv/lediga-jobb/city/title/123?x=1#part";
+    const expected =
+      "https://www.studentconsulting.com//example.com/sv/lediga-jobb/city/title/123?x=1#part";
+
+    expect(normalizeStudentConsultingUrl(input)).toBe(expected);
+    expect(normalizeStudentConsultingJobUrl(input)).toBe(expected);
+    expect(normalizeStudentConsultingJobUrl(expected)).toBe(expected);
+    expect(normalizeStudentConsultingUrl(expected)).toBe(expected);
+  });
+
+  it("rejects authority-like pathnames for matched-profile routes", () => {
+    expect(
+      normalizeStudentConsultingMatchedJobsUrl(
+        "https://www.studentconsulting.com//example.com/sv/profil/matcha-jobb/",
+      ),
+    ).toBeNull();
+  });
+
   it("requires the exact configured origin for matched-profile routes", () => {
     expect(
       normalizeStudentConsultingMatchedJobsUrl(
@@ -802,6 +822,32 @@ describe("StudentConsulting application verification", () => {
 });
 
 describe("StudentConsulting application submission guard", () => {
+  it("keeps an authority-like job path on the trusted origin when applying", async () => {
+    const { page } = pitchApplicationPage();
+    const visited: string[] = [];
+    const goto = page.goto.bind(page);
+    page.goto = async (url, options) => {
+      visited.push(url);
+      return goto(url, options);
+    };
+    const provider = new StudentConsultingProvider({
+      page,
+      credentials: {
+        async getStudentConsultingCredentials() {
+          throw new Error("Credentials should not be needed");
+        },
+      },
+    });
+    const sourceUrl =
+      "https://www.studentconsulting.com//example.com/sv/lediga-jobb/city/title/123";
+
+    await provider.apply({ ...verificationJob, sourceUrl });
+    expect(visited.at(-1)).toBe(sourceUrl);
+    expect(
+      visited.every((url) => new URL(url).origin === "https://www.studentconsulting.com"),
+    ).toBe(true);
+  });
+
   it("fills the known required Pitch field with a factual generic motivation", async () => {
     const harness = pitchApplicationPage();
     const job = { ...verificationJob, location: "Stockholm" };
@@ -902,6 +948,59 @@ describe("StudentConsulting application submission guard", () => {
 });
 
 describe("StudentConsulting authenticated discovery", () => {
+  it("keeps a listing job URL on the trusted origin after repeated normalization", async () => {
+    const sourceUrl =
+      "https://www.studentconsulting.com//id.studentconsulting.com//example.com/sv/lediga-jobb/city/title/123";
+    const page = matchedProfilePage({ jobLinkValue: sourceUrl });
+    const visited: string[] = [];
+    const goto = page.goto.bind(page);
+    page.goto = async (url, options) => {
+      visited.push(url);
+      return goto(url, options);
+    };
+    const provider = new StudentConsultingProvider({
+      page,
+      credentials: {
+        async getStudentConsultingCredentials() {
+          throw new Error("Credentials should not be needed");
+        },
+      },
+      maxPagesPerSource: 1,
+      fetcher: countryIndexFetcher,
+    });
+
+    await expect(provider.discover()).resolves.toEqual([]);
+    expect(visited).toContain(sourceUrl);
+    expect(
+      visited.every((url) => new URL(url).origin === "https://www.studentconsulting.com"),
+    ).toBe(true);
+  });
+
+  it("rejects authority-like paths in matched navigation before visiting them", async () => {
+    const page = matchedProfilePage({
+      matchedNavHref: "https://www.studentconsulting.com//example.com/sv/profil/matcha-jobb/",
+    });
+    const visited: string[] = [];
+    const goto = page.goto.bind(page);
+    page.goto = async (url, options) => {
+      visited.push(url);
+      return goto(url, options);
+    };
+    const provider = new StudentConsultingProvider({
+      page,
+      credentials: {
+        async getStudentConsultingCredentials() {
+          throw new Error("Credentials should not be needed");
+        },
+      },
+      maxPagesPerSource: 1,
+      fetcher: countryIndexFetcher,
+    });
+
+    await expect(provider.discover()).rejects.toThrow(/MATCHED_PROFILE_ROUTE_INVALID/);
+    expect(visited).toEqual(["https://www.studentconsulting.com/sv/profil/"]);
+  });
+
   it("discovers from the canonical authenticated Matcha jobb route", async () => {
     const provider = new StudentConsultingProvider({
       page: matchedProfilePage(),
