@@ -103,6 +103,53 @@ const link = (src, dst, target) => {
   return `${repoUrl}/blob/main/${resolved}${suffix}`;
 };
 
+// Search each part of the line only forwards, including when a candidate has
+// no closing delimiter. Later candidates can overlap an earlier failed one.
+const rewriteLinks = (src, dst, line) => {
+  const parts = [];
+  let search = 0;
+  let copied = 0;
+  let boundary = 0;
+  let whitespaceEnd = 0;
+  let quoteEnd = -1;
+  let start;
+  while ((start = line.indexOf("](", search)) !== -1) {
+    const targetStart = start + 2;
+    boundary = Math.max(boundary, targetStart);
+    while (boundary < line.length && line[boundary] !== ")" && !/\s/.test(line[boundary])) {
+      boundary++;
+    }
+
+    let end = boundary;
+    if (boundary > targetStart && line[boundary] !== ")") {
+      whitespaceEnd = Math.max(whitespaceEnd, boundary);
+      while (whitespaceEnd < line.length && /\s/.test(line[whitespaceEnd])) whitespaceEnd++;
+      if (line[whitespaceEnd] === '"') {
+        if (quoteEnd <= whitespaceEnd) {
+          quoteEnd = line.indexOf('"', whitespaceEnd + 1);
+          if (quoteEnd === -1) quoteEnd = line.length;
+        }
+        end = line[quoteEnd + 1] === ")" ? quoteEnd + 1 : line.length;
+      } else {
+        end = line.length;
+      }
+    }
+
+    if (boundary > targetStart && line[end] === ")") {
+      parts.push(
+        line.slice(copied, targetStart),
+        link(src, dst, line.slice(targetStart, boundary)),
+      );
+      copied = boundary;
+      search = end + 1;
+    } else {
+      search = targetStart;
+    }
+  }
+  parts.push(line.slice(copied));
+  return parts.join("");
+};
+
 const rewrite = (src, dst, text) => {
   let fenced = false;
   return text
@@ -111,10 +158,7 @@ const rewrite = (src, dst, text) => {
     .map((line) => {
       if (/^\s*(```|~~~)/.test(line)) fenced = !fenced;
       if (fenced) return line;
-      return line.replace(
-        /(\]\()([^)\s]+)((?:\s+"[^"]*")?\))/g,
-        (_, open, target, close) => open + link(src, dst, target) + close,
-      );
+      return rewriteLinks(src, dst, line);
     })
     .join("\n");
 };
