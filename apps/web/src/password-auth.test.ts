@@ -3,6 +3,13 @@ import { authorizeDashboardRequest, dashboardAuthMode } from "./auth";
 import { passwordAuthRoute, passwordIdentity } from "./password-auth";
 
 const env = { AUTH_MODE: "password", ADMIN_PASSWORD: "correct horse battery" };
+const untrustedHeaders: HeadersInit[] = [
+  {},
+  { Origin: "http://evil.example" },
+  { Origin: "http://localhost:8788" },
+  { Origin: "not an origin" },
+  { Origin: "http://localhost:8787", "Sec-Fetch-Site": "cross-site" },
+];
 const at = (path: string, init?: RequestInit) => new Request(`http://localhost:8787${path}`, init);
 const login = (password: string) =>
   passwordAuthRoute(
@@ -45,8 +52,36 @@ describe("password mode", () => {
     expect(await passwordIdentity(at("/", { headers: { cookie } }), otherPassword)).toBe(null);
   });
 
-  it("logs out by clearing the cookie", async () => {
-    const out = await passwordAuthRoute(at("/cdn-cgi/access/logout"), env);
-    expect(out?.headers.get("set-cookie")).toContain("Max-Age=0");
+  describe.each(["/auth/logout", "/cdn-cgi/access/logout"])("logout at %s", (path) => {
+    it.each(["GET", "HEAD", "OPTIONS", "PUT"])(
+      "does not clear the cookie on %s",
+      async (method) => {
+        const out = await passwordAuthRoute(at(path, { method }), env);
+        expect(out?.status).toBe(405);
+        expect(out?.headers.get("allow")).toBe("POST");
+        expect(out?.headers.get("set-cookie")).toBeNull();
+      },
+    );
+
+    it.each(untrustedHeaders)("rejects an untrusted POST (%o)", async (headers) => {
+      const out = await passwordAuthRoute(at(path, { method: "POST", headers }), env);
+      expect(out?.status).toBe(403);
+      expect(out?.headers.get("set-cookie")).toBeNull();
+    });
+
+    it("clears the cookie on a same-origin POST", async () => {
+      const out = await passwordAuthRoute(
+        at(path, {
+          method: "POST",
+          headers: { Origin: "http://localhost:8787", "Sec-Fetch-Site": "same-origin" },
+        }),
+        env,
+      );
+      expect(out?.status).toBe(303);
+      expect(out?.headers.get("location")).toBe("/auth/login");
+      expect(out?.headers.get("set-cookie")).toContain(
+        "jobb_session=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0",
+      );
+    });
   });
 });
